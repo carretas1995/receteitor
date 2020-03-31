@@ -1,0 +1,97 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+body{
+  background-color: #221E1F;
+}
+
+
+.card {
+  min-width: 931px;
+  width: 931px;
+} 
+
+.card-title{
+  margin-bottom: 0;
+}
+
+.card-body{
+  min-height: 351px;
+  padding: 10px;
+  display: flex;
+}
+
+.card-body p{
+  text-align: justify;
+  color: black;
+}
+
+.card-footer{
+  padding: 0;
+}
+
+#recipes{
+  display: flex;
+  justify-content: center;
+}
+
+#mensajes{
+  height: 46px;
+  width: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#mensaje{
+  text-align: center;
+  background-color: #f7dddc;
+  padding: 16px;
+  color: #721c24;
+  border-radius: 8px;
+}
+
+#mensajeOK{
+  text-align: center;
+  background-color: #d4edda;
+  padding: 16px;
+  color: #155724;
+  border-radius: 8px;
+}
+
+/* ventana acerca de */
+#acercaDe{
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#acercaDe h3{
+  margin-bottom: 31px;
+  color: white;
+}
+
+.busqueda{
+  display: flex;
+  justify-content: center;
+}
+
+#busqueda{
+  width: 300px;
+  text-align: center;
+}
+
+.custom-file-control, .form-control, .is-focused .custom-file-control, .is-focused .form-control {
+  background-image: linear-gradient(0deg,white 2px,transparent 0),linear-gradient(0deg, transparent 1px,transparent 0);
+}
+
+.material-input:focus, .form-control#focusedInput1:focus, .form-control#focusedInput1.focus {
+  background-image: linear-gradient(#CD3333, #CD3333), linear-gradient(white, white)!important;
+}

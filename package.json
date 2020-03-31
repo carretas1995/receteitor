@@ -1,0 +1,51 @@
+{
+  "name": "Receteitor",
+  "version": "1.0.0",
+  "description": "Recetas de gabriel",
+  "main": "src/main.js",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "Gabriel",
+  "license": "MIT",
+  "dependencies": {
+    "electron-builder-squirrel-windows": "^22.4.1"
+  },
+  "build": {
+    "appId": "receteitor-v1",
+    "asar": true,
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "squirrel",
+      "icon": "build/icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^3.0.10",
+    "electron-builder": "^22.4.1",
+    "electron-reload": "^1.3.0"
+  }
+}

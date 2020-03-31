@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Receteitor</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-material-design.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <div class="container-fluid p-4">
+      <!-- busqueda -->
+      <div class="form-group label-floating busqueda">        
+        <input class="form-control" id="busqueda" type="text" placeholder="Buscar receta">
+      </div>
+
+      <div id="mensajes"></div>
+      <div class="row" id="recipes">
+      </div>
+    </div>
+
+    <!-- <button class="btn btn-danger btn-sm" id="nuevaReceta">
+      <img src="../img/anadir.png" class="img-fluid" alt="nueva receta">
+    </button> -->
+
+
+    <!-- -->
+    <script>window.$ = window.jQuery = require('./jquery-3.4.1.min.js');</script>
+
+    <!-- Logic -->
+    <script>
+      const { ipcRenderer } = require('electron');
+      // identifico donde guardar las notas nuevos
+      const recipes = document.querySelector('#recipes');
+      
+      /* busqueda de receta*/
+      $(document).ready(function () {
+        $("#busqueda").on("keyup", function () {
+          var value = $(this).val().toLowerCase();
+          $(".card").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+      });
+
+      /* se utiliza para cargar las notas gurdadas al iniciar el programa */
+        ipcRenderer.on('recipes:load', (e, recipeLoad) => {
+          const newRecipeTemplateLoad = `
+          <div class="col-xs-4 p-2">
+          <div class="card text-center" id="${recipeLoad.id}">
+              <div class="card-header">
+                <h5 class="card-title">${recipeLoad.title}</h5>
+              </div>
+              <div class="card-body">              
+                <p>${recipeLoad.content}</p>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-danger btn-sm" id="borrar">
+                  <img src="../img/borrar.png" class="img-fluid" alt="Borrar">
+                </button>
+              </div>
+          </div>
+          </div>
+          `;
+
+          //añado la nueva nota al html
+          recipes.innerHTML += newRecipeTemplateLoad;
+
+          //selecciono el boton de borrar
+          const btns = document.querySelectorAll('.btn.btn-danger');
+          //busco el click en los botones          
+          btns.forEach(btn => {
+            btn.addEventListener('click', e => {
+              //obtengo el id de la nota a borrar
+              const idRecipe = e.target.parentElement.parentElement.getAttribute('id');
+              //llamo al metodo para borrar la linea del archivo
+              deleteRecipeInFile(idRecipe);
+              e.target.parentElement.parentElement.parentElement.remove();
+            });
+          }); 
+        });
+
+      //capturo el evento de new-note.html al añadir una nueva nota
+      ipcRenderer.on('recipe:new', (e, newRecipe) => {
+        const newRecipeTemplate = `
+        <div class="col-xs-4 p-2">
+        <div class="card text-center" id="${recipes.children.length}">
+            <div class="card-header">
+              <h5 class="card-title">${newRecipe.title}</h5>
+            </div>
+            <div class="card-body">              
+              <p>${newRecipe.content}</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-danger btn-sm" id="borrar">
+                <img src="../img/borrar.png" class="img-fluid" alt="Borrar">
+              </button>
+            </div>
+        </div>
+        </div>
+      `;
+        
+        //añado la nueva nota al html
+        recipes.innerHTML += newRecipeTemplate;
+        //selecciono el boton de borrar
+        const btns = document.querySelectorAll('.btn.btn-danger');
+        btns.forEach(btn => {
+          btn.addEventListener('click', e => {
+            //obtengo el id de la nota a borrar
+            const idRecipe = e.target.parentElement.parentElement.getAttribute('id');
+            //llamo al metodo para borrar la linea del archivo
+            deleteRecipeInFile(idRecipe);
+            e.target.parentElement.parentElement.parentElement.remove();
+          });
+        }); 
+      });
+          
+      /* elimina todos las recetas */
+      ipcRenderer.on('recipe:remove-all', e => {
+        recipes.innerHTML = '';
+      });
+
+      /* mensajes de error */
+      ipcRenderer.on('error:alert', (e, error) => {
+        document.getElementById('mensajes').style.display = 'flex';
+        document.querySelector('#mensajes').innerHTML = '<p id="mensaje">'+error+'</p>';
+        //oculto el mensage a los 5 segundos
+        setTimeout(
+          function () {
+            document.getElementById('mensajes').style.display = "none";
+          }, 5000
+        );  
+      });
+
+      /* mensajes de ok */
+        ipcRenderer.on('ok:alert', (e, message) => {
+          document.getElementById('mensajes').style.display = 'flex';
+          document.querySelector('#mensajes').innerHTML = '<p id="mensajeOK">' + message + '</p>';
+          //oculto el mensage a los 5 segundos
+          setTimeout(
+            function () {
+              document.getElementById('mensajes').style.display = "none";
+            }, 5000
+          ); 
+        });
+
+
+      /* funcion que elimina la nota del archibo de respaldo */
+      function deleteRecipeInFile(line) {
+        /* modulo para leer/escribir archivos */
+        const fs = require('fs');
+        //compruebo si existe el archivo
+        if (fs.existsSync('dataRecipes.txt')) {
+          //elimino la linea que corresponde a la receta, para ello leo el archivo
+          fs.readFile('dataRecipes.txt', 'utf8', function (err, data) {
+            //array con el el contenido
+            let contenido = data.split("%!");
+            //elimino el retorno de carro
+            contenido.pop();            
+            //si no es negativo
+            if (line > -1) {
+              //elimino la linea correspondiente a la receta
+              contenido.splice(line, 1);
+            }           
+            //vacio el archivo dataRecipes.txt
+            fs.truncate('dataRecipes.txt', 0, function (err) { if (err) { } });
+            //sobreescrivo el archivo
+            contenido.forEach(element => {
+              fs.createWriteStream("dataRecipes.txt", { flags: 'a' }).write(element + '%!');
+            });
+
+          });
+
+        }
+      }
+
+      // Remove Single Product
+      function removeProduct(e) {
+      }
+    </script>
+  </body>
+</html>

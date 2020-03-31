@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Añadir receta</title>
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <!-- Interface -->
+    <form class="p-4">
+      <div class="form-group">
+        <label for="">Titulo</label>
+        <input type="text" id="title" class="form-control" placeholder="Titulo receta" autofocus>
+      </div>
+      <div class="form-group">      
+        <label for="exampleTextarea">Nueva receta</label>
+        <textarea class="form-control" id="contenidoReceta" rows="13" wrap="hard"></textarea>
+      </div>
+      
+      <button class="btn btn-primary btn-block">
+        Guardar
+      </button>
+    </form>
+
+    <!-- Logic -->
+    <script>      
+      //modulo para la comunicacion entre ventanas
+      const { ipcRenderer } = require('electron');
+      //selecciono el formulario
+      const form = document.querySelector('form');
+      form.addEventListener('submit', e => {
+        e.preventDefault(); //cancelo el envio de datos del form
+        //recojo los valores del formulario
+        const titleRecipe =  document.querySelector('#title').value;         
+        const contentRecipe = document.querySelector('#contenidoReceta').value.replace(/\n/g, "<br />");
+        //creo el objeto con los valores
+        const newRecipe = {
+          title: titleRecipe,
+          content: contentRecipe
+        };
+
+        //mando los datos
+        ipcRenderer.send('recipe:new', newRecipe);
+      });
+    </script>
+
+  </body>
+</html>
