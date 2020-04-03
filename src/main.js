@@ -323,7 +323,7 @@ if (process.platform === 'darwin') {
 };
 
 /* activo las opciones de desarrollo en navbar si estoy en produccion  */
-if (process.env.NODE_ENV !== 'production') {
+/* if (process.env.NODE_ENV !== 'production') {
   templateMenu.push({
     label: 'DevTools',
     submenu: [
@@ -340,7 +340,7 @@ if (process.env.NODE_ENV !== 'production') {
       }
     ]
   })
-}
+} */
 
 /* funcion que envia un mensaje de error a la ventana principal */
 function errorMessage(message) {

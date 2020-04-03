@@ -40,7 +40,7 @@
     },
     "win": {
       "target": "squirrel",
-      "icon": "build/icon.ico"
+      "icon": "https://github.com/carretas1995/receteitor/blob/master/build/icon.ico"
     }
   },
   "devDependencies": {
